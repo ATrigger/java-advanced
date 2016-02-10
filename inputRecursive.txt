@@ -1,0 +1,5 @@
+/home/kamenev/a.out
+/home/kamenev/Desktop/
+/home/kamenev/compton.conf
+/home/kamenev/Notfound/
+/homa/kamenev/hont.a
