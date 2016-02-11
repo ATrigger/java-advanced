@@ -1,6 +1,8 @@
 /**
  * Created by kamenev on 10.02.16.
  */
+//CLASSPATH=${CLASSPATH}:$(echo "$(pwd)"/*.jar | tr ' ' ':')
+//java info.kgeorgiy.java.advanced.walk.Tester RecursiveWalk ru.ifmo.ctddev.kamanev.walk.RecursiveWalk
 package ru.ifmo.ctddev.kamenev.walk;
 
 import java.io.BufferedReader;
