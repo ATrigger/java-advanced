@@ -25,7 +25,7 @@ public class Utils {
                 }
                 return sb.toString().toUpperCase();
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // Couldn't calculate hash
             return "00000000000000000000000000000000";
         }
     }

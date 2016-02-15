@@ -1,11 +1,1 @@
-D41D8CD98F00B204E9800998ECF8427E /home/kamenev/a.out
-F19334317A61EB98ACEAE557055425F9 /home/kamenev/Desktop/XCOM Enemy Unknown.desktop
-48244451DD55206FA93DE340B38D3BED /home/kamenev/Desktop/Counter-Strike Global Offensive.desktop
-6B22E188199C3D16AD670A2D373970F5 /home/kamenev/Desktop/Sid Meier's Civilization V.desktop
-2CAE5CF40EE491A6606DA36B5646EAF8 /home/kamenev/Desktop/Counter-Strike.desktop
-B938A03BCADF135B1F680D79ED771E2D /home/kamenev/Desktop/Hearthstone.desktop
-EA6A54A0CB594D89D05696B79B7201D1 /home/kamenev/Desktop/Battle.net.desktop
-C5D4392ACA6458BD41933DD08C8A2E91 /home/kamenev/Desktop/Mount & Blade Warband.desktop
-AC043FB0A9FF2239F021EA150305C237 /home/kamenev/compton.conf
-00000000000000000000000000000000 /home/kamenev/Notfound/
-00000000000000000000000000000000 /homa/kamenev/hont.a
+00000000000000000000000000000000 /no/such/folder
