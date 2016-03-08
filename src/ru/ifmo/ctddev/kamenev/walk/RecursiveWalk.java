@@ -20,9 +20,13 @@ public class RecursiveWalk {
             RecursiveWalk walker = new RecursiveWalk();
             walker.files = new Path[2];
             walker.files[0] = Paths.get(args[0]);
+            if (Files.notExists(walker.files[0])) {
+                System.out.println("Input file doesn't exist");
+                return;
+            }
             walker.files[1] = Paths.get(args[1]);
             walker.process();
-        }
+        } else System.err.println("No input\\output file specified");
     }
 
     public void process() {
@@ -52,8 +56,7 @@ public class RecursiveWalk {
                         md.update(dataBytes, 0, n);
                     byte[] mdbytes = md.digest();
                     StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < mdbytes.length; i++)
-                        sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+                    for (byte mdbyte : mdbytes) sb.append(Integer.toString((mdbyte & 0xff) + 0x100, 16).substring(1));
                     return sb.toString().toUpperCase();
                 }
             } catch (Exception e) { // Couldn't calculate hash
