@@ -12,5 +12,6 @@
     <orderEntry type="library" name="junit-4.11" level="project" />
     <orderEntry type="library" name="quickcheck-0.6" level="project" />
     <orderEntry type="library" name="ImplementorTest" level="project" />
+    <orderEntry type="library" name="ArraySetTest" level="project" />
   </component>
 </module>
