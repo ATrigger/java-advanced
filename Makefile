@@ -12,9 +12,9 @@ hw3_easy: jar
 
 hw2: hw2_easy hw2_hard
 hw2_hard: jar
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done) info.kgeorgiy.java.advanced.arrayset.Tester NavigableSet ru.ifmo.ctddev.kamenev.collection.ArraySet $(salt)
+	java -cp .$(shell for i in $(libs); do echo -n :$$i; done) info.kgeorgiy.java.advanced.arrayset.Tester NavigableSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet $(salt)
 hw2_easy: jar
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done) info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.ctddev.kamenev.collection.ArraySet $(salt)
+	java -cp .$(shell for i in $(libs); do echo -n :$$i; done) info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet $(salt)
 
 
 hw1: hw1_easy hw1_hard
