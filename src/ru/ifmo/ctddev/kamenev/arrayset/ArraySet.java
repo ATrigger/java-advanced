@@ -213,6 +213,7 @@ public class ArraySet<T extends Comparable<? super T>> extends AbstractSet<T> im
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean contains(Object o) {
         return Collections.binarySearch(base, (T) o, comparator) >= 0;
     }
