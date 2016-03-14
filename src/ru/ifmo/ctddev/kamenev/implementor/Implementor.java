@@ -22,6 +22,9 @@ import java.util.Objects;
  * Created by kamenev on 09.03.16.
  */
 public class Implementor implements Impler {
+    public static void main(String[] args) {
+        System.out.println("Hello, world!");
+    }
     @Override
     public void implement(Class<?> aClass, Path path) throws ImplerException {
         Objects.requireNonNull(aClass);
@@ -148,7 +151,6 @@ public class Implementor implements Impler {
             to.write("\t}");
             to.newLine();
         }
-
     }
 
     private static void walkAncestors(Class c, Map<String, Method> map) {
