@@ -33,11 +33,22 @@ public class Implementor implements Impler {
         if (Modifier.isFinal(mods)) {
             throw new ImplerException("Cannot override final class : " + aClass.getName());
         }
-        if (!Modifier.isAbstract(mods) && !aClass.isInterface() && aClass.getConstructors().length == 0) {
+        int count = aClass.getConstructors().length;
+        if (count == 0) {
+            for (Constructor c : aClass.getDeclaredConstructors()) {
+                if (!Modifier.isPrivate(c.getModifiers())) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        if (!aClass.isInterface() && count == 0) {
             throw new ImplerException("No constructor available : " + aClass.getName());
         }
         try {
-            path = path.resolve(aClass.getPackage().getName().replace(".", File.separator));
+            if (aClass.getPackage() != null) {    
+                path = path.resolve(aClass.getPackage().getName().replace(".", File.separator));
+            }
             Files.createDirectories(path);
         } catch (Exception e) {
             throw new ImplerException("Cannot create directories according to package name");
@@ -61,20 +72,13 @@ public class Implementor implements Impler {
         to.write("public class " + clazz.getSimpleName() + "Impl");
         Class[] ints = clazz.getInterfaces();
         if (!clazz.isInterface()) {
-            to.write(" extends " + clazz.getSimpleName() + ((ints.length > 0) ? (" implements ") : ("")));
+            to.write(" extends " + clazz.getSimpleName());
         } else {
-            to.write(" implements " + clazz.getSimpleName() + ((ints.length > 0) ? (", ") : ("")));
+            to.write(" implements " + clazz.getSimpleName());
         }
-        if (ints.length > 0) {
-            for (int i = 0; i < ints.length; i++) {
-                to.write(ints[i].getName());
-                if (i + 1 < ints.length) to.write(", ");
-            }
-        }
+        to.write(" {");
         to.newLine();
-        to.write("{");
-        to.newLine();
-        for (Constructor constructor : clazz.getConstructors()) {
+        for (Constructor constructor : clazz.getDeclaredConstructors()) {
             if (!Modifier.isFinal(constructor.getModifiers()) && !Modifier.isPrivate(constructor.getModifiers())) {
                 printConstructor(constructor, to, clazz.getSimpleName());
             }
@@ -83,7 +87,7 @@ public class Implementor implements Impler {
         walkAncestors(clazz, hashMap);
         for (Method method : clazz.getMethods()) {
             int mods = method.getModifiers();
-            if (Modifier.isAbstract(mods) && !Modifier.isPrivate(mods)) {
+            if (Modifier.isAbstract(mods)) {
                 hashMap.put(getHash(method), method);
             }
         }
@@ -99,9 +103,9 @@ public class Implementor implements Impler {
     }
 
     private static void printConstructor(Constructor c, BufferedWriter to, String className) throws IOException {
-        to.write("\t" +
+        to.write("    " +
                 Modifier.toString(c.getModifiers() &
-                        ~c.getModifiers() &
+                        ~Modifier.ABSTRACT &
                         Modifier.constructorModifiers())
                 + " " + className + "Impl(");
         printParameters(c.getParameters(), to);
@@ -109,19 +113,19 @@ public class Implementor implements Impler {
         printExceptions(c.getExceptionTypes(), to);
         to.write("{");
         to.newLine();
-        to.write("\t\tsuper(");
+        to.write("        super(");
         for (int i = 0; i < c.getParameterCount(); i++) {
             to.write("arg" + i);
             if (i + 1 < c.getParameterCount()) to.write(",");
         }
         to.write(");");
         to.newLine();
-        to.write("\t}");
+        to.write("    }");
         to.newLine();
     }
 
     private static void printMethod(Method m, BufferedWriter to) throws IOException {
-        to.write("\t" +
+        to.write("    " +
                 Modifier.toString(m.getModifiers() & ~Modifier.ABSTRACT & ~Modifier.NATIVE & ~Modifier.TRANSIENT) +
                 " " +
                 m.getReturnType().getCanonicalName() +
@@ -136,7 +140,7 @@ public class Implementor implements Impler {
         } else {
             to.write("{");
             to.newLine();
-            to.write("\t\treturn ");
+            to.write("        return ");
             if (m.getReturnType().isPrimitive()) {
                 if (m.getReturnType().equals(boolean.class)) {
                     to.write("false");
@@ -148,7 +152,7 @@ public class Implementor implements Impler {
             }
             to.write(";");
             to.newLine();
-            to.write("\t}");
+            to.write("    }");
             to.newLine();
         }
     }
