@@ -47,6 +47,23 @@ jar: lib_dir
 	jar cvfm src.jar src/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
 	rm -rf build
+doc: javadoc
 
+javadoc:
+	rm -rf doc 
+	mkdir doc
+	rm -rf src/info
+	mkdir src/info
+	mkdir src/info/kgeorgiy
+	mkdir src/info/kgeorgiy/java
+	mkdir src/info/kgeorgiy/java/advanced
+	cp java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor src/info/kgeorgiy/java/advanced -r
+	javadoc src/ru/ifmo/ctddev/kamenev/implementor/Implementor.java \
+	src/info/kgeorgiy/java/advanced/implementor/Impler.java \
+	src/info/kgeorgiy/java/advanced/implementor/ImplerException.java \
+	src/info/kgeorgiy/java/advanced/implementor/JarImpler.java \
+	-d doc -private -link http://docs.oracle.com/javase/8/docs/api/
+	rm -rf src/info
 clean: 
 	rm -rf lib/src.jar
+	rm -rf doc
