@@ -1,10 +1,16 @@
+kgeorgiy_dir = $(shell find . -maxdepth 1 -name java-advanced-2016 -type d)
 lib_dir = $(shell find . -name lib -type d)
 artifacts_dir = $(shell find . -name artifacts -type d)
-src_dir = $(shell find . -name src -type d)
-libs = $(shell find $(lib_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
+src_dir = $(shell find . -maxdepth 1 -name src  -type d)
+libs = $(shell find $(kgeorgiy_dir) $(lib_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
 artifacts = $(shell find $(artifacts_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
 classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
+hw4: hw4_hard
+
+hw4_hard:
+	java -cp "build/$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar"\
+	 info.kgeorgiy.java.advanced.implementor.Tester jar-class ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
 
 hw3: hw3_easy hw3_hard
 
@@ -35,11 +41,12 @@ build_dir:
 lib_dir:
 	mkdir -p lib
 compile: build_dir $(sources)
-	find $(src_dir) -name '*.java' | tr '\n' ' ' | xargs javac -cp .$(shell for i in $(libs); do echo -n :$$i; done):.$(shell for i in $(artifacts); do echo -n :$$i; done) -d build/
+	find $(src_dir)  -name '*.java' | tr '\n' ' ' | xargs javac -cp .$(shell for i in $(libs); do echo -n :$$i; done):\
+	.$(shell for i in $(artifacts); do echo -n :$$i; done) -d build/
 jar: lib_dir
 	jar cvfm src.jar src/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
 	rm -rf build
 
 clean: 
-	rm -rf lib
+	rm -rf lib/src.jar

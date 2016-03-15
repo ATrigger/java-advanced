@@ -2,29 +2,69 @@ package ru.ifmo.ctddev.kamenev.implementor;
 
 import info.kgeorgiy.java.advanced.implementor.Impler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
+import info.kgeorgiy.java.advanced.implementor.JarImpler;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 /**
  * Created by kamenev on 09.03.16.
  */
-public class Implementor implements Impler {
+public class Implementor implements Impler, JarImpler {
+
     public static void main(String[] args) {
-        System.out.println("Hello, world!");
+        if (args == null || args.length < 2) {
+            System.err.println("Not enough arguments! Must be at least 2");
+            return;
+        }
+        if (args[0].equals("-jar") && args.length >= 3) {
+            try {
+                Class<?> c = Class.forName(args[1]);
+                Implementor impl = new Implementor();
+                impl.implementJar(c, Paths.get(args[2]));
+            } catch (ClassNotFoundException e) {
+                System.err.println("Cannot find class: " + args[1]);
+            } catch (ImplerException e) {
+                System.err.println("Cannot implement class: " + args[1] + " cause: " + e.getMessage());
+            }
+        } else if (!args[0].equals("-jar")) {
+            try {
+                Class<?> c = Class.forName(args[0]);
+                Implementor impl = new Implementor();
+                impl.implement(c, Paths.get(args[1]));
+            } catch (ClassNotFoundException e) {
+                System.err.println("Cannot find class: " + args[0]);
+            } catch (ImplerException e) {
+                System.err.println("Cannot implement class: " + args[0] + " cause: " + e.getMessage());
+            }
+        } else {
+            System.err.println("Usage: \"-jar\" <ClassName> <JarName>");
+            System.err.println("Usage: <ClassName> <Directory>");
+        }
     }
+
+    private Path resolvePackage(Class<?> aClass, Path path) {
+        if (aClass.getPackage() == null) return path;
+        else return path.resolve(aClass.getPackage().getName().replace(".", File.separator));
+    }
+
     @Override
     public void implement(Class<?> aClass, Path path) throws ImplerException {
         Objects.requireNonNull(aClass);
@@ -46,16 +86,14 @@ public class Implementor implements Impler {
             throw new ImplerException("No constructor available : " + aClass.getName());
         }
         try {
-            if (aClass.getPackage() != null) {    
-                path = path.resolve(aClass.getPackage().getName().replace(".", File.separator));
-            }
+            path = resolvePackage(aClass, path);
             Files.createDirectories(path);
         } catch (Exception e) {
             throw new ImplerException("Cannot create directories according to package name");
         }
         try (BufferedWriter out = Files.newBufferedWriter(
                 path.resolve(aClass.getSimpleName() + "Impl.java"),
-                StandardCharsets.UTF_8)) {
+                Charset.defaultCharset())) {
             printClass(aClass, out);
         } catch (IOException e) {
             e.printStackTrace();
@@ -171,7 +209,7 @@ public class Implementor implements Impler {
 
     private static void printParameters(Parameter[] parameters, BufferedWriter out) throws IOException {
         for (int i = 0; i < parameters.length; ++i) {
-            out.write(parameters[i].getType().getCanonicalName() + " arg" + i + (i + 1 < parameters.length ? ", " : " "));
+            out.write(parameters[i].getType().getCanonicalName() + " arg" + i + (i + 1 < parameters.length ? ", " : ""));
         }
     }
 
@@ -179,6 +217,50 @@ public class Implementor implements Impler {
         out.write((exceptions.length > 0 ? " throws " : ""));
         for (int i = 0; i < exceptions.length; ++i) {
             out.write(exceptions[i].getName() + (i + 1 < exceptions.length ? ", " : " "));
+        }
+    }
+
+    @Override
+    public void implementJar(Class<?> aClass, Path output) throws ImplerException {
+        Objects.requireNonNull(aClass);
+        Objects.requireNonNull(output);
+        Path p = Paths.get("");
+        p.toFile().deleteOnExit();
+        implement(aClass, p);
+        Path target = resolvePackage(aClass, p);
+        int exit = compilation(p, target.resolve(aClass.getSimpleName() + "Impl.java"));
+        if (exit != 0) {
+            throw new ImplerException("Cannot compile source: " + aClass.getSimpleName() + "Impl.java" + ". Exit code: " + exit);
+        }
+        archieve(output, target.resolve(aClass.getSimpleName() + "Impl.class"));
+    }
+
+    private static int compilation(Path dir, Path file) {
+        JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+        List<String> args = new ArrayList<>();
+        args.add(file.toAbsolutePath().toString());
+        args.add("-cp");
+        args.add(System.getProperty("java.class.path"));
+        return javaCompiler.run(null, null, null, args.toArray(new String[args.size()]));
+    }
+
+    private static void archieve(Path to, Path what) throws ImplerException {
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        try (
+                JarOutputStream output = new JarOutputStream(Files.newOutputStream(to),
+                        manifest);
+                InputStream input = Files.newInputStream(what);
+                ) {
+            output.putNextEntry(new ZipEntry(what.toString()));
+            byte[] buff = new byte[1024];
+            int counter=0;
+            while((counter = input.read(buff))>0){
+                output.write(buff,0,counter);
+            }
+            output.closeEntry();
+        } catch (IOException e) {
+            throw new ImplerException("Cannot create JAR file: "+e.getMessage());
         }
     }
 }
