@@ -25,10 +25,9 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- * 
+ *
  * This class creates implementation of classes or interfaces
  * that you provide.
- * <p>
  *
  * @author Vladislav Kamenev
  * @see info.kgeorgiy.java.advanced.implementor.Impler
@@ -39,9 +38,9 @@ public class Implementor implements Impler, JarImpler {
     *  Creates new instance of Implementor class
     *
     */
-    public Implementor(){}
+    public Implementor() {}
     /**
-     * 
+     *
      * Main method to execute in this class
      * <p>
      * If number of the arguments is valid, what means more or equal two,
@@ -86,7 +85,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Method to resolve path over package.
      * <p>
      * This method transforms {@code path} to valid dir
@@ -96,14 +95,15 @@ public class Implementor implements Impler, JarImpler {
      * @param path   current working directory
      * @return if {@code aClass} in the default package method will return {@code path} unchanged.
      * Otherwise method returns new path with correct package hierarchy.
+     * @throws InvalidPathException if token's package string cannot be converted to path
      */
-    private Path resolvePackage(Class<?> aClass, Path path) {
+    private Path resolvePackage(Class<?> aClass, Path path) throws InvalidPathException {
         if (aClass.getPackage() == null) return path;
         else return path.resolve(aClass.getPackage().getName().replace(".", File.separator));
     }
 
     /**
-     * 
+     *
      * Method to generate non-jar implementation
      * <p>
      * Creates a file that correctly implements or extends interface or class.
@@ -116,6 +116,7 @@ public class Implementor implements Impler, JarImpler {
      * @param aClass target class or interface, which is going to be implemented
      * @param path   directory where implementation should be placed to
      * @throws ImplerException if {@code aClass} is final or got no non-private constructors
+     * or cannot create directories according to {@code aCLass}'s package
      * @see Impler
      * @see #implementJar(Class, Path)
      */
@@ -146,8 +147,8 @@ public class Implementor implements Impler, JarImpler {
             throw new ImplerException("Cannot create directories according to package name");
         }
         try (BufferedWriter out = Files.newBufferedWriter(
-                path.resolve(aClass.getSimpleName() + "Impl.java"),
-                Charset.defaultCharset())) {
+                                          path.resolve(aClass.getSimpleName() + "Impl.java"),
+                                          Charset.defaultCharset())) {
             printClass(aClass, out);
         } catch (IOException e) {
             e.printStackTrace();
@@ -157,7 +158,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Prints header and frame of the given class
      * <p>
      * Prints header and frame of the given class and calling other methods to fill it up.
@@ -208,7 +209,7 @@ public class Implementor implements Impler, JarImpler {
 
     /**
      *
-     * 
+     *
      * Makes hash-like string of a method
      * <p>
      * Makes hash-like string of a method, so we can use it as a key in a map.
@@ -223,7 +224,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Prints declaration of given constructor
      * <p>
      * Method to print {@code constructor} of the class. Includes arguments and exceptions if they are neccesary.
@@ -237,10 +238,10 @@ public class Implementor implements Impler, JarImpler {
      */
     private static void printConstructor(Constructor constructor, BufferedWriter to, String className) throws IOException {
         to.write("    " +
-                Modifier.toString(constructor.getModifiers() &
-                        ~Modifier.ABSTRACT &
-                        Modifier.constructorModifiers())
-                + " " + className + "Impl(");
+                 Modifier.toString(constructor.getModifiers() &
+                                   ~Modifier.ABSTRACT &
+                                   Modifier.constructorModifiers())
+                 + " " + className + "Impl(");
         printParameters(constructor.getParameters(), to);
         to.write(")");
         printExceptions(constructor.getExceptionTypes(), to);
@@ -258,7 +259,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Prints method of the class
      * <p>
      * Method to print given method. Includes parameters and exceptions if they are neccesary.
@@ -271,11 +272,11 @@ public class Implementor implements Impler, JarImpler {
      */
     private static void printMethod(Method m, BufferedWriter to) throws IOException {
         to.write("    " +
-                Modifier.toString(m.getModifiers() & ~Modifier.ABSTRACT & ~Modifier.NATIVE & ~Modifier.TRANSIENT) +
-                " " +
-                m.getReturnType().getCanonicalName() +
-                " " + m.getName() + " ("
-        );
+                 Modifier.toString(m.getModifiers() & ~Modifier.ABSTRACT & ~Modifier.NATIVE & ~Modifier.TRANSIENT) +
+                 " " +
+                 m.getReturnType().getCanonicalName() +
+                 " " + m.getName() + " ("
+                );
         printParameters(m.getParameters(), to);
         to.write(")");
         printExceptions(m.getExceptionTypes(), to);
@@ -303,7 +304,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Method to walk all ancestors of the class
      * <p>
      * This method will walk to very beggining of {@code aClass} inheritance hierarchy and
@@ -325,7 +326,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Prints given parametres
      * <p>
      *
@@ -358,7 +359,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Provides implementation of class archieved in JAR
      * <p>
      * Takes given class. Makes implementation and tries to compile it.
@@ -385,7 +386,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Provides basic usage of Java compiler
      * <p>
      * Requests an system Java compiler and passes {@code file} to it
@@ -404,7 +405,7 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * 
+     *
      * Makes JAR of {@code what} and places it {@code to}
      * <p>
      * Makes JAR of {@code what} and places it {@code to} and provides manifest
@@ -422,7 +423,7 @@ public class Implementor implements Impler, JarImpler {
                 JarOutputStream output = new JarOutputStream(Files.newOutputStream(to),
                         manifest);
                 InputStream input = Files.newInputStream(what);
-        ) {
+            ) {
             output.putNextEntry(new ZipEntry(what.toString()));
             byte[] buff = new byte[1024];
             int counter = 0;
