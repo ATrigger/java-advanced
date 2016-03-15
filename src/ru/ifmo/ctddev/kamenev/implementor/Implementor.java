@@ -25,10 +25,10 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- * <p>
+ * 
  * This class creates implementation of classes or interfaces
  * that you provide.
- * </p>
+ * <p>
  *
  * @author Vladislav Kamenev
  * @see info.kgeorgiy.java.advanced.implementor.Impler
@@ -36,9 +36,14 @@ import java.util.zip.ZipEntry;
  */
 public class Implementor implements Impler, JarImpler {
     /**
-     * <p>
+    *  Creates new instance of Implementor class
+    *
+    */
+    public Implementor(){}
+    /**
+     * 
      * Main method to execute in this class
-     * </p>
+     * <p>
      * If number of the arguments is valid, what means more or equal two,
      * this will command to make implementation of class given as the first argument
      * and whether the argument {@code -jar} is given the implementation will be
@@ -81,9 +86,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Method to resolve path over package.
-     * </p>
+     * <p>
      * This method transforms {@code path} to valid dir
      * according to {@code aClass} package hierarchy
      *
@@ -98,9 +103,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Method to generate non-jar implementation
-     * </p>
+     * <p>
      * Creates a file that correctly implements or extends interface or class.
      * Output file is created in the folder that corresponds to the package of
      * the given class or interface. Output file contains java class that implements
@@ -152,9 +157,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Prints header and frame of the given class
-     * </p>
+     * <p>
      * Prints header and frame of the given class and calling other methods to fill it up.
      * Collects all methods of the given class and then passes them to {@link #printMethod(Method, BufferedWriter)}
      *
@@ -203,9 +208,9 @@ public class Implementor implements Impler, JarImpler {
 
     /**
      *
-     * <p>
+     * 
      * Makes hash-like string of a method
-     * </p>
+     * <p>
      * Makes hash-like string of a method, so we can use it as a key in a map.
      * Gets name and concatenates its arguments' types
      *
@@ -218,9 +223,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Prints declaration of given constructor
-     * </p>
+     * <p>
      * Method to print {@code constructor} of the class. Includes arguments and exceptions if they are neccesary.
      *
      * @param constructor constructor to print
@@ -253,9 +258,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Prints method of the class
-     * </p>
+     * <p>
      * Method to print given method. Includes parameters and exceptions if they are neccesary.
      *
      * @param m  method to print
@@ -298,9 +303,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Method to walk all ancestors of the class
-     * </p>
+     * <p>
      * This method will walk to very beggining of {@code aClass} inheritance hierarchy and
      * fill up dictionary with method, which are abstract and non-private.
      *
@@ -320,9 +325,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Prints given parametres
-     * </p>
+     * <p>
      *
      * @param parameters array of parametres to print
      * @param out        to print to
@@ -353,9 +358,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Provides implementation of class archieved in JAR
-     * </p>
+     * <p>
      * Takes given class. Makes implementation and tries to compile it.
      * If the compilation succedes tries to make JAR file of the compiled
      * byte-code
@@ -370,7 +375,6 @@ public class Implementor implements Impler, JarImpler {
         Objects.requireNonNull(aClass);
         Objects.requireNonNull(output);
         Path p = Paths.get("");
-        p.toFile().deleteOnExit();
         implement(aClass, p);
         Path target = resolvePackage(aClass, p);
         int exit = compilation(target.resolve(aClass.getSimpleName() + "Impl.java"));
@@ -381,9 +385,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Provides basic usage of Java compiler
-     * </p>
+     * <p>
      * Requests an system Java compiler and passes {@code file} to it
      * After that returns result of compilation
      *
@@ -400,9 +404,9 @@ public class Implementor implements Impler, JarImpler {
     }
 
     /**
-     * <p>
+     * 
      * Makes JAR of {@code what} and places it {@code to}
-     * </p>
+     * <p>
      * Makes JAR of {@code what} and places it {@code to} and provides manifest
      * that contains version attribute.
      *

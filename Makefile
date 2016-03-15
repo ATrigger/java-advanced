@@ -1,11 +1,13 @@
 kgeorgiy_dir = $(shell find . -maxdepth 1 -name java-advanced-2016 -type d)
 lib_dir = $(shell find $(kgeorgiy_dir) -name lib -type d)
+mylib_dir = $(shell find . -maxdepth 1 -name lib -type d)
 artifacts_dir = $(shell find . -name artifacts -type d)
 src_dir = $(shell find . -maxdepth 1 -name src  -type d)
 libs = $(shell find  $(lib_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
 artifacts = $(shell find $(artifacts_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
 classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
+myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
 hw5: hw5_doc
 
 hw5_doc: javadoc
@@ -25,10 +27,10 @@ hw3_easy:
 	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar info.kgeorgiy.java.advanced.implementor.Tester interface ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
 
 hw2: hw2_easy hw2_hard
-hw2_hard: jar
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ArraySetTest.jar info.kgeorgiy.java.advanced.arrayset.Tester NavigableSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet "$(salt)"
-hw2_easy: jar
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ArraySetTest.jar info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet "$(salt)"
+hw2_hard: 
+	java -cp build/:$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ArraySetTest.jar info.kgeorgiy.java.advanced.arrayset.Tester NavigableSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet "$(salt)"
+hw2_easy: 
+	java -cp build/:$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ArraySetTest.jar info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet "$(salt)"
 
 
 hw1: hw1_easy hw1_hard
@@ -50,7 +52,6 @@ compile: build_dir $(sources)
 jar: lib_dir
 	jar cvfm src.jar src/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
-	rm -rf build
 doc: javadoc
 
 javadoc:
@@ -63,10 +64,11 @@ javadoc:
 	mkdir src/info/kgeorgiy/java/advanced
 	cp java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor src/info/kgeorgiy/java/advanced -r
 	javadoc src/ru/ifmo/ctddev/kamenev/implementor/Implementor.java \
+	src/ru/ifmo/ctddev/kamenev/implementor/package-info.java \
 	src/info/kgeorgiy/java/advanced/implementor/Impler.java \
 	src/info/kgeorgiy/java/advanced/implementor/ImplerException.java \
 	src/info/kgeorgiy/java/advanced/implementor/JarImpler.java \
-	-d doc -private -link http://docs.oracle.com/javase/8/docs/api/
+	-d doc -author -private -link http://docs.oracle.com/javase/8/docs/api/
 	rm -rf src/info
 clean: 
 	rm -rf lib/src.jar
