@@ -1,11 +1,15 @@
 kgeorgiy_dir = $(shell find . -maxdepth 1 -name java-advanced-2016 -type d)
-lib_dir = $(shell find . -name lib -type d)
+lib_dir = $(shell find $(kgeorgiy_dir) -name lib -type d)
 artifacts_dir = $(shell find . -name artifacts -type d)
 src_dir = $(shell find . -maxdepth 1 -name src  -type d)
-libs = $(shell find $(kgeorgiy_dir) $(lib_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
+libs = $(shell find  $(lib_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
 artifacts = $(shell find $(artifacts_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\.\///g')
 classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
+hw5: hw5_doc
+
+hw5_doc: javadoc
+
 hw4: hw4_hard
 
 hw4_hard:
