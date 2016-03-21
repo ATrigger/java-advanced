@@ -5,6 +5,7 @@ import info.kgeorgiy.java.advanced.concurrent.ListIP;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -159,6 +160,7 @@ public class IterativeParallelism implements ListIP {
      * @param function function to map to
      * @return list of elements after using {@code function} on them
      * @throws InterruptedException if any thread has interrupted any of created thread
+     * @throws NoSuchElementException if {@code list} is empty
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -178,10 +180,11 @@ public class IterativeParallelism implements ListIP {
      * @param comparator comparator to use to
      * @return minimum element
      * @throws InterruptedException if any thread has interrupted any of created thread
+     * @throws NoSuchElementException if {@code list} is empty
      * @see #parallel(int, List, Function)
      */
     @Override
-    public <T> T maximum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException {
+    public <T> T maximum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException,NoSuchElementException {
         return minimum(i, list, comparator.reversed());
     }
 
@@ -197,7 +200,7 @@ public class IterativeParallelism implements ListIP {
      * @see #parallel(int, List, Function)
      */
     @Override
-    public <T> T minimum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException {
+    public <T> T minimum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException,NoSuchElementException {
         Function<List<? extends T>, T> min = arg -> arg.stream().min(comparator).get();
         return min.apply(parallel(i, list, min));
     }
