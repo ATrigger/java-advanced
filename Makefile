@@ -15,7 +15,7 @@ hw5_doc: javadoc
 hw4: hw4_hard
 
 hw4_hard:
-	java -cp "build/$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar"\
+	java -cp "lib/*$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar"\
 	 info.kgeorgiy.java.advanced.implementor.Tester jar-class ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
 
 hw3: hw3_easy hw3_hard
