@@ -58,10 +58,7 @@ javadoc:
 	rm -rf doc 
 	mkdir doc
 	rm -rf src/info
-	mkdir src/info
-	mkdir src/info/kgeorgiy
-	mkdir src/info/kgeorgiy/java
-	mkdir src/info/kgeorgiy/java/advanced
+	mkdir -p src/info/kgeorgiy/java/advanced
 	cp java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor src/info/kgeorgiy/java/advanced -r
 	javadoc src/ru/ifmo/ctddev/kamenev/implementor/Implementor.java \
 	src/ru/ifmo/ctddev/kamenev/implementor/package-info.java \
