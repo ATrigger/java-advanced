@@ -101,7 +101,7 @@ public class IterativeParallelism implements ListIP {
     private <T, R> List<R> parallel(int number, List<? extends T> list, Function<List<? extends T>, R> func) throws InterruptedException {
         List<MyRunnable<T, R>> threads = new ArrayList<>();
         int n = list.size();
-        int step = Math.max(n / number, 1);
+        int step = Math.max(n / number, 1) + 1;
         for (int it = 0; it < n; it += step) {
             threads.add(new MyRunnable<>(func, list.subList(it, Math.min(n, it + step))));
         }
