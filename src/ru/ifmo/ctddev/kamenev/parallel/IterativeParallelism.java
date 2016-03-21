@@ -34,11 +34,13 @@ public class IterativeParallelism implements ListIP {
      * Create threads with assigned {@code MyRunnable}s, runs them and wait them to die.
      *
      * @param target list of {@code MyRunnable}s to start to
+     * @param <In>   type that describes input data
+     * @param <Out>  type after applying {@code func} to {@code data}
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see MyRunnable
      * @see java.lang.Thread
-     * @see java.lang.InterruptedException
      */
-    private <In, Out> void startAndJoin(List<MyRunnable<In, Out>> target) {
+    private <In, Out> void startAndJoin(List<MyRunnable<In, Out>> target) throws InterruptedException {
         List<Thread> threads = target.stream().map(Thread::new).collect(Collectors.toList());
         threads.forEach(Thread::start);
         try {
@@ -47,6 +49,7 @@ public class IterativeParallelism implements ListIP {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            throw e;
         }
 
     }
@@ -80,21 +83,24 @@ public class IterativeParallelism implements ListIP {
 
     /**
      * <p>
-     * Divides task into {@code n} threads.
+     * Divides task into {@code number} threads.
      * </p>
-     * Divides task into {@code n} threads and collects data from each into list
+     * Divides task into {@code number} threads and collects data from each into list
      *
-     * @param n    number of threads
-     * @param list list of input data
-     * @param func function to apply in each thread
+     * @param number number of threads
+     * @param list   list of input data
+     * @param func   function to apply in each thread
+     * @param <T>    type that describes input data
+     * @param <R>    type after applying {@code func} to {@code data}
      * @return list of data received from each thread
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see MyRunnable
      * @see #startAndJoin(List)
      */
-    private <T, R> List<R> parallel(int n, List<? extends T> list, Function<List<? extends T>, R> func) {
+    private <T, R> List<R> parallel(int number, List<? extends T> list, Function<List<? extends T>, R> func) throws InterruptedException {
         List<MyRunnable<T, R>> threads = new ArrayList<>();
         int n = list.size();
-        int step = Math.max(n / n, 1);
+        int step = Math.max(n / number, 1);
         for (int it = 0; it < n; it += step) {
             threads.add(new MyRunnable<>(func, list.subList(it, Math.min(n, it + step))));
         }
@@ -111,7 +117,7 @@ public class IterativeParallelism implements ListIP {
      * @param i    number of threads
      * @param list list to use to
      * @return {@code String} representation of all elements
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -133,7 +139,7 @@ public class IterativeParallelism implements ListIP {
      * @param list      list to use to
      * @param predicate predicate to filter to
      * @return list of elements that satisfies predicate
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -152,7 +158,7 @@ public class IterativeParallelism implements ListIP {
      * @param list     list to use to
      * @param function function to map to
      * @return list of elements after using {@code function} on them
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -171,7 +177,7 @@ public class IterativeParallelism implements ListIP {
      * @param list       list to use to
      * @param comparator comparator to use to
      * @return minimum element
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -187,7 +193,7 @@ public class IterativeParallelism implements ListIP {
      * @param list       list to use to
      * @param comparator comparator to use to
      * @return minimum element
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -206,7 +212,7 @@ public class IterativeParallelism implements ListIP {
      * @param list      list to use to
      * @param predicate predicate to check to
      * @return boolean according to description
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override
@@ -224,7 +230,7 @@ public class IterativeParallelism implements ListIP {
      * @param list      list to use to
      * @param predicate predicate to check to
      * @return boolean according to description
-     * @throws InterruptedException
+     * @throws InterruptedException if any thread has interrupted any of created thread
      * @see #parallel(int, List, Function)
      */
     @Override

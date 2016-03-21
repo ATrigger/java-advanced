@@ -8,6 +8,10 @@ artifacts = $(shell find $(artifacts_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\
 classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
 myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
+hw6:
+	java -cp "lib/*$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/IterativeParallelismTest.jar" \
+	info.kgeorgiy.java.advanced.concurrent.Tester list ru.ifmo.ctddev.kamenev.parallel.IterativeParallelism "$(salt)"
+
 hw5: hw5_doc
 
 hw5_doc: javadoc
@@ -15,22 +19,8 @@ hw5_doc: javadoc
 hw4: hw4_hard
 
 hw4_hard:
-	java -cp "lib/*$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar"\
-	 info.kgeorgiy.java.advanced.implementor.Tester jar-class ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
-
-hw3: hw3_easy hw3_hard
-
-hw3_hard:
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar info.kgeorgiy.java.advanced.implementor.Tester class ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
-
-hw3_easy:
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar info.kgeorgiy.java.advanced.implementor.Tester interface ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
-
-hw2: hw2_easy hw2_hard
-hw2_hard: 
-	java -cp build/:$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ArraySetTest.jar info.kgeorgiy.java.advanced.arrayset.Tester NavigableSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet "$(salt)"
-hw2_easy: 
-	java -cp build/:$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ArraySetTest.jar info.kgeorgiy.java.advanced.arrayset.Tester SortedSet ru.ifmo.ctddev.kamenev.arrayset.ArraySet "$(salt)"
+	java -cp "lib/*$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar" \
+	info.kgeorgiy.java.advanced.implementor.Tester jar-class ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
 
 
 hw1: hw1_easy hw1_hard
@@ -49,8 +39,11 @@ lib_dir:
 compile: build_dir $(sources)
 	find $(src_dir)  -name '*.java' | tr '\n' ' ' | xargs javac -cp .$(shell for i in $(libs); do echo -n :$$i; done):\
 	.$(shell for i in $(artifacts); do echo -n :$$i; done) -d build/
-jar: lib_dir
-	jar cvfm src.jar src/META-INF/MANIFEST.MF -C build ./
+jarhw4: lib_dir
+	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/implementor/META-INF/MANIFEST.MF -C build ./
+	mv src.jar lib/
+jarhw6: lib_dir
+	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/parallel/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
 doc: javadoc
 
