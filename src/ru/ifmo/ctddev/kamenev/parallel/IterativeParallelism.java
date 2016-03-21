@@ -220,7 +220,7 @@ public class IterativeParallelism implements ListIP {
      */
     @Override
     public <T> boolean all(int i, List<? extends T> list, Predicate<? super T> predicate) throws InterruptedException {
-        return parallel(i, list, arg -> arg.stream().allMatch(predicate)).stream().allMatch(Predicate.isEqual(true));
+        return !any(i,list,predicate.negate());
     }
 
     /**
