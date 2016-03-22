@@ -61,28 +61,18 @@ public class Implementor implements Impler, JarImpler {
             return;
         }
         Implementor impl = new Implementor();
-        if (args[0].equals("-jar") && args.length >= 3) {
-            try {
-                Class<?> c = Class.forName(args[1]);
-                impl.implementJar(c, Paths.get(args[2]));
-            } catch (ClassNotFoundException e) {
-                System.err.println("Cannot find class: " + args[1]);
-            } catch (ImplerException e) {
-                System.err.println("Cannot implement class: " + args[1] + " cause: " + e.getMessage());
-            }
-        } else if (!args[0].equals("-jar")) {
-            try {
-                Class<?> c = Class.forName(args[0]);
-                impl.implement(c, Paths.get(args[1]));
-            } catch (ClassNotFoundException e) {
-                System.err.println("Cannot find class: " + args[0]);
-            } catch (ImplerException e) {
-                System.err.println("Cannot implement class: " + args[0] + " cause: " + e.getMessage());
-            }
-        } else {
-            System.err.println("Usage: \"-jar\" <ClassName> <JarName>");
-            System.err.println("Usage: <ClassName> <Directory>");
+        boolean isJar = args[0].equals("-jar");
+        try {
+            Class<?> c = Class.forName(args[(isJar) ? (1) : (0)]);
+            if (isJar) { impl.implementJar(c, Paths.get(args[2]) ); }
+                else
+                    {impl.implement(c, Paths.get(args[1])); }
+        } catch (ClassNotFoundException e) {
+            System.err.println("Cannot find class: " + args[(isJar) ? (1) : (0)]);
+        } catch (ImplerException e) {
+            System.err.println("Cannot implement class: " + args[(isJar) ? (1) : (0)] + " cause: " + e.getMessage());
         }
+
     }
 
     /**

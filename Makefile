@@ -64,3 +64,4 @@ javadoc:
 clean: 
 	rm -rf lib/src.jar
 	rm -rf doc
+	rm -rf build
