@@ -53,14 +53,13 @@ javadoc:
 	javadoc src/ru/ifmo/ctddev/kamenev/implementor/Implementor.java \
 	src/ru/ifmo/ctddev/kamenev/implementor/package-info.java \
 	src/ru/ifmo/ctddev/kamenev/parallel/IterativeParallelism.java \
-    src/ru/ifmo/ctddev/kamenev/parallel/package-info.java \
+	src/ru/ifmo/ctddev/kamenev/parallel/package-info.java \
 	java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor/Impler.java \
 	java-advanced-2016/java/info/kgeorgiy/java/advanced/concurrent/ListIP.java \
 	java-advanced-2016/java/info/kgeorgiy/java/advanced/concurrent/ScalarIP.java \
 	java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor/ImplerException.java \
 	java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor/JarImpler.java \
 	-d doc -author -private -link http://docs.oracle.com/javase/8/docs/api/
-	rm -rf src/info
 clean: 
 	rm -rf lib/src.jar
 	rm -rf doc

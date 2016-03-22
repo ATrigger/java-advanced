@@ -36,10 +36,11 @@ import java.util.zip.ZipEntry;
  */
 public class Implementor implements Impler, JarImpler {
     /**
-    *  Creates new instance of Implementor class
-    *
-    */
+     *  Creates new instance of Implementor class
+     *
+     */
     public Implementor() {}
+
     /**
      *
      * Main method to execute in this class
@@ -412,17 +413,9 @@ public class Implementor implements Impler, JarImpler {
     private static void archieve(Path to, Path what) throws ImplerException {
         Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        try (
-                JarOutputStream output = new JarOutputStream(Files.newOutputStream(to),
-                        manifest);
-                InputStream input = Files.newInputStream(what);
-            ) {
+        try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(to), manifest)) {
             output.putNextEntry(new ZipEntry(what.toString()));
-            byte[] buff = new byte[1024];
-            int counter = 0;
-            while ((counter = input.read(buff)) > 0) {
-                output.write(buff, 0, counter);
-            }
+            Files.copy(what,output);
             output.closeEntry();
         } catch (IOException e) {
             throw new ImplerException("Cannot create JAR file: " + e.getMessage());

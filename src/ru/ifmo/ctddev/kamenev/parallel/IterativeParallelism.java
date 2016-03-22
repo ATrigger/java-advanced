@@ -11,10 +11,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Created by kamenev on 21.03.16.
- */
-
-/**
  * Class designed to parallel actions on list-based collections.
  *
  * @author Vladislav Kamenev
@@ -58,16 +54,16 @@ public class IterativeParallelism implements ListIP {
     /**
      * Class designed to apply {@code func} to {@code data} in a separate thread
      *
-     * @param <InputType>  type that describes input data
-     * @param <OutputType> type after applying {@code func} to {@code data}
+     * @param <IN>  type that describes input data
+     * @param <OUT> type after applying {@code func} to {@code data}
      * @see java.util.function.Function
      */
-    private class MyRunnable<InputType, OutputType> implements Runnable {
-        private List<? extends InputType> data;
-        private Function<List<? extends InputType>, OutputType> func;
-        private OutputType result;
+    private class MyRunnable<IN, OUT> implements Runnable {
+        private List<? extends IN> data;
+        private Function<List<? extends IN>, OUT> func;
+        private OUT result;
 
-        public MyRunnable(Function<List<? extends InputType>, OutputType> func, List<? extends InputType> data) {
+        public MyRunnable(Function<List<? extends IN>, OUT> func, List<? extends IN> data) {
             this.func = func;
             this.data = data;
         }
@@ -77,7 +73,7 @@ public class IterativeParallelism implements ListIP {
             result = func.apply(data);
         }
 
-        public OutputType getResult() {
+        public OUT getResult() {
             return result;
         }
     }
@@ -101,9 +97,13 @@ public class IterativeParallelism implements ListIP {
     private <T, R> List<R> parallel(int number, List<? extends T> list, Function<List<? extends T>, R> func) throws InterruptedException {
         List<MyRunnable<T, R>> threads = new ArrayList<>();
         int n = list.size();
-        int step = Math.max(n / number, 1) + 1;
-        for (int it = 0; it < n; it += step) {
-            threads.add(new MyRunnable<>(func, list.subList(it, Math.min(n, it + step))));
+        number = Math.min(number, n);
+        int step = n / number;
+        int to = 0;
+        for (int it = 0; it < number ; it += 1) {
+            int from = to;
+            to += step + ((it < n % number) ? (1) : (0));
+            threads.add(new MyRunnable<>(func, list.subList(from, to)));
         }
         startAndJoin(threads);
         return threads.stream().map(MyRunnable::getResult).collect(Collectors.toList());
@@ -184,7 +184,7 @@ public class IterativeParallelism implements ListIP {
      * @see #parallel(int, List, Function)
      */
     @Override
-    public <T> T maximum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException,NoSuchElementException {
+    public <T> T maximum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException, NoSuchElementException {
         return minimum(i, list, comparator.reversed());
     }
 
@@ -200,7 +200,7 @@ public class IterativeParallelism implements ListIP {
      * @see #parallel(int, List, Function)
      */
     @Override
-    public <T> T minimum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException,NoSuchElementException {
+    public <T> T minimum(int i, List<? extends T> list, Comparator<? super T> comparator) throws InterruptedException, NoSuchElementException {
         Function<List<? extends T>, T> min = arg -> arg.stream().min(comparator).get();
         return min.apply(parallel(i, list, min));
     }
@@ -220,7 +220,7 @@ public class IterativeParallelism implements ListIP {
      */
     @Override
     public <T> boolean all(int i, List<? extends T> list, Predicate<? super T> predicate) throws InterruptedException {
-        return !any(i,list,predicate.negate());
+        return !any(i, list, predicate.negate());
     }
 
     /**
