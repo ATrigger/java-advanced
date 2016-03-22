@@ -64,9 +64,11 @@ public class Implementor implements Impler, JarImpler {
         boolean isJar = args[0].equals("-jar");
         try {
             Class<?> c = Class.forName(args[(isJar) ? (1) : (0)]);
-            if (isJar) { impl.implementJar(c, Paths.get(args[2]) ); }
-                else
-                    {impl.implement(c, Paths.get(args[1])); }
+            if (isJar) {
+                impl.implementJar(c, Paths.get(args[2]) );
+            } else {
+                impl.implement(c, Paths.get(args[1]));
+            }
         } catch (ClassNotFoundException e) {
             System.err.println("Cannot find class: " + args[(isJar) ? (1) : (0)]);
         } catch (ImplerException e) {
