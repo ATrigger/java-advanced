@@ -1,6 +1,6 @@
 package ru.ifmo.ctddev.kamenev.mapper;
 
-import info.kgeorgiy.java.mapper.ParallelMapper;
+import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +33,13 @@ public class ParallelMapperImpl implements ParallelMapper {
     }
 
     /**
+     * Creates tasks of given data and pass it to workers
      *
-     * @param f
-     * @param args
-     * @param <T>
-     * @param <R>
-     * @return
+     * @param f    function to use for processing
+     * @param args list of input data
+     * @param <T>  type that describes input data
+     * @param <R>  type that describes output data
+     * @return list of results of processing every given part of {@code args}
      * @throws InterruptedException
      */
     @Override
@@ -57,6 +58,7 @@ public class ParallelMapperImpl implements ParallelMapper {
     }
 
     /**
+     * Stops all threads
      *
      * @throws InterruptedException
      */

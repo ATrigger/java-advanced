@@ -1,4 +1,4 @@
-package info.kgeorgiy.java.mapper;
+package info.kgeorgiy.java.advanced.mapper;
 
 import info.kgeorgiy.java.advanced.base.BaseTester;
 

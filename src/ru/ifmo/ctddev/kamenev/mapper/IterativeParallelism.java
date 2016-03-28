@@ -1,7 +1,7 @@
 package ru.ifmo.ctddev.kamenev.mapper;
 
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
-import info.kgeorgiy.java.mapper.ParallelMapper;
+import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;

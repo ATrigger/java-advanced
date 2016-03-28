@@ -8,9 +8,10 @@ artifacts = $(shell find $(artifacts_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\
 classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
 myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
+
 hw7:
 	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/IterativeParallelismTest.jar" \
-	info.kgeorgiy.java.mapper.Tester list  ru.ifmo.ctddev.kamenev.mapper.ParallelMapperImpl,\
+	Tester list  ru.ifmo.ctddev.kamenev.mapper.ParallelMapperImpl,\
 	ru.ifmo.ctddev.kamenev.mapper.IterativeParallelism "$(salt)"
 
 hw6:
@@ -44,16 +45,8 @@ doc: javadoc
 javadoc:
 	rm -rf doc 
 	mkdir doc
-	javadoc src/ru/ifmo/ctddev/kamenev/implementor/Implementor.java \
-	src/ru/ifmo/ctddev/kamenev/implementor/package-info.java \
-	src/ru/ifmo/ctddev/kamenev/parallel/IterativeParallelism.java \
-	src/ru/ifmo/ctddev/kamenev/parallel/package-info.java \
-	java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor/Impler.java \
-	java-advanced-2016/java/info/kgeorgiy/java/advanced/concurrent/ListIP.java \
-	java-advanced-2016/java/info/kgeorgiy/java/advanced/concurrent/ScalarIP.java \
-	java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor/ImplerException.java \
-	java-advanced-2016/java/info/kgeorgiy/java/advanced/implementor/JarImpler.java \
-	-d doc -author -private -link http://docs.oracle.com/javase/8/docs/api/
+	javadoc  -sourcepath "src/:java-advanced-2016/java" -cp .$(shell for i in $(libs); do echo -n :$$i; done) -d doc -author -private -link http://docs.oracle.com/javase/8/docs/api/ \
+	ru.ifmo.ctddev.kamenev.mapper ru.ifmo.ctddev.kamenev.implementor ru.ifmo.ctddev.kamenev.parallel
 clean: 
 	rm -rf lib/src.jar
 	rm -rf doc

@@ -1,4 +1,4 @@
-package info.kgeorgiy.java.mapper;
+package info.kgeorgiy.java.advanced.mapper;
 
 import java.util.List;
 import java.util.function.Function;
