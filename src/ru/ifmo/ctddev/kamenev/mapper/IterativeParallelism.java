@@ -1,6 +1,7 @@
-package ru.ifmo.ctddev.kamenev.parallel;
+package ru.ifmo.ctddev.kamenev.mapper;
 
 import info.kgeorgiy.java.advanced.concurrent.ListIP;
+import info.kgeorgiy.java.mapper.ParallelMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,32 +13,43 @@ import java.util.stream.Collectors;
 
 /**
  * Class designed to parallel actions on list-based collections.
- *
+ * Can use {@link ParallelMapper} as well.
  * @author Vladislav Kamenev
  * @see info.kgeorgiy.java.advanced.concurrent.ListIP
  */
 public class IterativeParallelism implements ListIP {
+    private final ParallelMapper parallelMapper;
+
     /**
-     * Creates instance of class.
+     * Creates new instance of class w\o usage of {@link ParallelMapper}
      */
     public IterativeParallelism() {
-
+        parallelMapper = null;
     }
 
     /**
-     * <p>
-     * Creates threads with assigned {@code Worker}s.
-     * </p>
-     * Create threads with assigned {@code Worker}s, runs them and wait them to die.
-     *
-     * @param target list of {@code Worker}s to start to
-     * @param <In>   type that describes input data
-     * @param <Out>  type after applying {@code func} to {@code data}
-     * @throws InterruptedException if any thread has interrupted any of created thread
-     * @see MyRunnable
-     * @see java.lang.Thread
+     * Creates new instance of class to use with {@link ParallelMapper}
+     * @param to {@link ParallelMapper} to use to
      */
-    private <In, Out> void startAndJoin(List<MyRunnable<In, Out>> target) throws InterruptedException {
+    public IterativeParallelism(ParallelMapper to) {
+        parallelMapper = to;
+    }
+
+    private <T> List<List<? extends T>> slice(int parts, List<? extends T> target) {
+        List<List<? extends T>> parted = new ArrayList<>();
+        int n = target.size();
+        parts = Math.min(parts, n);
+        int chunk = n / parts;
+        int to = 0;
+        for (int it = 0; it < parts; it += 1) {
+            int from = to;
+            to += chunk + ((it < n % parts) ? (1) : (0));
+            parted.add(target.subList(from, to));
+        }
+        return parted;
+    }
+
+    private <I, O> void startAndJoin(List<Worker<I, O>> target) throws InterruptedException {
         List<Thread> threads = target.stream().map(Thread::new).collect(Collectors.toList());
         threads.forEach(Thread::start);
         try {
@@ -51,19 +63,12 @@ public class IterativeParallelism implements ListIP {
 
     }
 
-    /**
-     * Class designed to apply {@code func} to {@code data} in a separate thread
-     *
-     * @param <IN>  type that describes input data
-     * @param <OUT> type after applying {@code func} to {@code data}
-     * @see java.util.function.Function
-     */
-    private class MyRunnable<IN, OUT> implements Runnable {
-        private List<? extends IN> data;
-        private Function<List<? extends IN>, OUT> func;
-        private OUT result;
+    private class Worker<I, O> implements Runnable {
+        private List<? extends I> data;
+        private Function<List<? extends I>, O> func;
+        private O result;
 
-        public MyRunnable(Function<List<? extends IN>, OUT> func, List<? extends IN> data) {
+        public Worker(Function<List<? extends I>, O> func, List<? extends I> data) {
             this.func = func;
             this.data = data;
         }
@@ -73,40 +78,22 @@ public class IterativeParallelism implements ListIP {
             result = func.apply(data);
         }
 
-        public OUT getResult() {
+        public O getResult() {
             return result;
         }
     }
 
-    /**
-     * <p>
-     * Divides task into {@code number} threads.
-     * </p>
-     * Divides task into {@code number} threads and collects data from each into list
-     *
-     * @param number number of threads
-     * @param list   list of input data
-     * @param func   function to apply in each thread
-     * @param <T>    type that describes input data
-     * @param <R>    type after applying {@code func} to {@code data}
-     * @return list of data received from each thread
-     * @throws InterruptedException if any thread has interrupted any of created thread
-     * @see MyRunnable
-     * @see #startAndJoin(List)
-     */
     private <T, R> List<R> parallel(int number, List<? extends T> list, Function<List<? extends T>, R> func) throws InterruptedException {
-        List<MyRunnable<T, R>> threads = new ArrayList<>();
-        int n = list.size();
-        number = Math.min(number, n);
-        int step = n / number;
-        int to = 0;
-        for (int it = 0; it < number ; it += 1) {
-            int from = to;
-            to += step + ((it < n % number) ? (1) : (0));
-            threads.add(new MyRunnable<>(func, list.subList(from, to)));
+        List<List<? extends T>> partition = slice(number, list);
+        if (parallelMapper != null) {
+            return parallelMapper.map(func, partition);
+        }
+        List<Worker<T, R>> threads = new ArrayList<>();
+        for (List<? extends T> part : partition) {
+            threads.add(new Worker<>(func, part));
         }
         startAndJoin(threads);
-        return threads.stream().map(MyRunnable::getResult).collect(Collectors.toList());
+        return threads.stream().map(Worker::getResult).collect(Collectors.toList());
     }
 
     /**

@@ -8,20 +8,14 @@ artifacts = $(shell find $(artifacts_dir) -name '*.jar' | tr '\n' ' ' | sed 's/\
 classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
 myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
+hw7:
+	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/IterativeParallelismTest.jar" \
+	info.kgeorgiy.java.mapper.Tester list  ru.ifmo.ctddev.kamenev.mapper.ParallelMapperImpl,\
+	ru.ifmo.ctddev.kamenev.mapper.IterativeParallelism "$(salt)"
+
 hw6:
 	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/IterativeParallelismTest.jar" \
 	info.kgeorgiy.java.advanced.concurrent.Tester list ru.ifmo.ctddev.kamenev.parallel.IterativeParallelism "$(salt)"
-
-hw5: hw5_doc
-
-hw5_doc: javadoc
-
-hw4: hw4_hard
-
-hw4_hard:
-	java -cp "lib/*$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ImplementorTest.jar" \
-	info.kgeorgiy.java.advanced.implementor.Tester jar-class ru.ifmo.ctddev.kamenev.implementor.Implementor "$(salt)"
-
 
 hw1: hw1_easy hw1_hard
 
