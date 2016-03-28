@@ -11,7 +11,7 @@ myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
 
 hw7:
 	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/IterativeParallelismTest.jar" \
-	Tester list  ru.ifmo.ctddev.kamenev.mapper.ParallelMapperImpl,\
+	info.kgeorgiy.java.advanced.mapper.Tester list ru.ifmo.ctddev.kamenev.mapper.ParallelMapperImpl,\
 	ru.ifmo.ctddev.kamenev.mapper.IterativeParallelism "$(salt)"
 
 hw6:
