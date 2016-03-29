@@ -10,7 +10,7 @@ import java.util.Queue;
  * @see Task
  */
 public class Tasks {
-    private Queue<Task<?, ?>> tasks;
+    private final Queue<Task<?, ?>> tasks;
 
     /**
      * Creates a new instance of class
@@ -27,7 +27,7 @@ public class Tasks {
      */
     public synchronized void newTask(Task<?, ?> input) {
         tasks.add(input);
-        notifyAll();
+        notify();
     }
 
     /**

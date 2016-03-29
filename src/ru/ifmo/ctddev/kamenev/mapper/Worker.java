@@ -25,7 +25,7 @@ public class Worker implements Runnable {
                 tasks.getTask().before();
             }
         } catch (InterruptedException e) {
-            //
+            Thread.currentThread().interrupt();
         }
     }
 }

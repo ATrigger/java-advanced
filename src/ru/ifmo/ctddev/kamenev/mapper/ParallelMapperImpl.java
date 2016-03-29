@@ -13,8 +13,8 @@ import java.util.function.Function;
  * @see ParallelMapper
  */
 public class ParallelMapperImpl implements ParallelMapper {
-    private List<Thread> threadPool;
-    private Tasks tasks;
+    private final List<Thread> threadPool = new ArrayList<>();
+    private final Tasks tasks = new Tasks();
 
     /**
      * Creates new instance of class and starts {@code threadcount} threads
@@ -23,10 +23,9 @@ public class ParallelMapperImpl implements ParallelMapper {
      * @see Worker
      */
     public ParallelMapperImpl(int threadcount) {
-        tasks = new Tasks();
-        threadPool = new ArrayList<>();
+        Worker sleepAndWork = new Worker(tasks);
         for (int i = 0; i < threadcount; i++) {
-            Thread tmp = new Thread(new Worker(tasks));
+            Thread tmp = new Thread(sleepAndWork);
             threadPool.add(tmp);
             tmp.start();
         }
@@ -59,11 +58,9 @@ public class ParallelMapperImpl implements ParallelMapper {
 
     /**
      * Stops all threads
-     *
-     * @throws InterruptedException
      */
     @Override
-    public void close() throws InterruptedException {
+    public void close() {
         threadPool.forEach(Thread::interrupt);
     }
 }

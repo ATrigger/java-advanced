@@ -11,9 +11,10 @@ import java.util.function.Function;
  * @see java.util.function.Function
  */
 public class Task<T, R> {
-    private T arg;
-    private Optional<R> result;
-    private Function<? super T, ? extends R> process;
+    private final T arg;
+    private volatile R result;
+    private volatile boolean gotResult;
+    private final Function<? super T, ? extends R> process;
 
     /**
      * Creates new task.
@@ -21,8 +22,8 @@ public class Task<T, R> {
      * @param input     data to process
      * @param inProcess function to use to process
      */
-    public Task(T input, Function<? super T, ? extends R> inProcess) {
-        result = Optional.empty();
+    public Task(T input, Function<? super T, ? extends R> inProcess) {        
+        gotResult = false;
         this.arg = input;
         this.process = inProcess;
     }
@@ -31,8 +32,9 @@ public class Task<T, R> {
      * Applies function {@code inProgress} and stores the result.
      */
     public synchronized void before() {
-        result = Optional.of(process.apply(arg));
-        notifyAll();
+        result = process.apply(arg);
+        gotResult = true;
+        notify();
     }
 
     /**
@@ -42,9 +44,9 @@ public class Task<T, R> {
      * @throws InterruptedException if this thread is interrupted during awit
      */
     public synchronized R after() throws InterruptedException {
-        while (!result.isPresent()) {
+        while (!gotResult) {
             wait();
         }
-        return result.get();
+        return result;
     }
 }
