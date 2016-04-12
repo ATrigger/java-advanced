@@ -9,9 +9,9 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] args) {
-        try (CrawlerImpl crawler = new CrawlerImpl(new CachingDownloader(),10,10,10)){
-            crawler.download("http://breedpmnr.ru",1).forEach(System.out::println);
-            crawler.download("http://ifmo.ru",1).forEach(System.out::println);
+        try (CrawlerImpl crawler = new CrawlerImpl(new CachingDownloader(),400,400,1000)){
+            crawler.download("http://ifmo.ru",1).getDownloaded().forEach(System.out::println);
+            //crawler.download("http://ifmo.ru",1).getDownloaded().forEach(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
         }
