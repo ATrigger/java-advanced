@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Created-By: Kamenev
+Class-Path: WebCrawlerTest.jar
+Main-Class: ru.ifmo.ctddev.kamenev.crawler.Main
+

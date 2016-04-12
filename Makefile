@@ -9,19 +9,18 @@ classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
 myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
 
+hw8:
+	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/WebCrawlerTest.jar" \
+	info.kgeorgiy.java.advanced.crawler.Tester hard ru.ifmo.ctddev.kamenev.crawler.CrawlerImpl \
+	"$(salt)"
+
+
 hw7:
 	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/ParallelMapperTest.jar" \
 	info.kgeorgiy.java.advanced.mapper.Tester list ru.ifmo.ctddev.kamenev.mapper.ParallelMapperImpl,\
 	ru.ifmo.ctddev.kamenev.mapper.IterativeParallelism "$(salt)"
 
-hw6:
-	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/IterativeParallelismTest.jar" \
-	info.kgeorgiy.java.advanced.concurrent.Tester list ru.ifmo.ctddev.kamenev.parallel.IterativeParallelism "$(salt)"
-
 hw1: hw1_easy hw1_hard
-
-hw1_easy: jar
-	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/WalkTest.jar info.kgeorgiy.java.advanced.walk.Tester Walk ru.ifmo.ctddev.kamenev.walk.RecursiveWalk "$(salt)"	
 
 hw1_hard: jar
 	java -cp .$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/WalkTest.jar info.kgeorgiy.java.advanced.walk.Tester RecursiveWalk ru.ifmo.ctddev.kamenev.walk.RecursiveWalk "$(salt)"	
@@ -40,6 +39,9 @@ jarhw4: lib_dir
 jarhw6: lib_dir
 	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/parallel/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
+jarhw8: lib_dir
+   	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/crawler/META-INF/MANIFEST.MF -C build ./
+   	mv src.jar lib/
 doc: javadoc
 
 javadoc:
