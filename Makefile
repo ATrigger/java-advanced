@@ -33,15 +33,19 @@ lib_dir:
 compile: build_dir $(sources)
 	find $(src_dir)  -name '*.java' | tr '\n' ' ' | xargs javac -cp .$(shell for i in $(libs); do echo -n :$$i; done):\
 	.$(shell for i in $(artifacts); do echo -n :$$i; done) -d build/
+
 jarhw4: lib_dir
 	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/implementor/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
+
 jarhw6: lib_dir
 	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/parallel/META-INF/MANIFEST.MF -C build ./
 	mv src.jar lib/
+
 jarhw8: lib_dir
-   	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/crawler/META-INF/MANIFEST.MF -C build ./
-   	mv src.jar lib/
+	jar cvfm src.jar src/ru/ifmo/ctddev/kamenev/crawler/META-INF/MANIFEST.MF -C build ./
+	mv src.jar lib/
+
 doc: javadoc
 
 javadoc:
