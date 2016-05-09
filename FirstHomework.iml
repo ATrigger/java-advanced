@@ -15,5 +15,7 @@
     <orderEntry type="library" name="IterativeParallelismTest" level="project" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="WebCrawlerTest1" level="project" />
+    <orderEntry type="library" name="ArraySetTest" level="project" />
+    <orderEntry type="library" name="HelloUDPTest" level="project" />
   </component>
 </module>
