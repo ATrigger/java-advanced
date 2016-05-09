@@ -13,17 +13,13 @@ public class BankImpl implements Bank {
     }
 
     // ������� ���
-    public Person createPerson(String name, String surname, String passportId, boolean local) throws RemoteException {
-        if(local) {
-            return new LocalPerson(name,surname,passportId);
-        } else {
+    public Person createPerson(String name, String surname, String passportId) throws RemoteException {
             synchronized (this) {
                 RemotePerson person = new RemotePerson(name,surname,passportId,port);
                 persons.put(passportId,person);
                 UnicastRemoteObject.exportObject(person, port);
                 return person;
             }
-        }
     }
 
     // �����頥� ���

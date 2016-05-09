@@ -7,6 +7,9 @@ import java.net.*;
 public class Client {
 
     public static void main(String[] args) throws RemoteException {
+        if(args.length!=5){
+            System.out.println("Invalid number of arguments");
+        }
         Bank bank;
         String name = args[0];
         String surname = args[1];
@@ -24,14 +27,10 @@ public class Client {
             System.out.println("Bank URL is invalid");
             return;
         }
-
-        String typeOfPerson = isLocal ? "local" : "remote";
         Person person = bank.getPerson(passportId, isLocal);
         if (person == null) {
-            System.out.println("Creating " + typeOfPerson + " person");
-            person = bank.createPerson(name, surname, passportId, isLocal);
-        } else {
-            System.out.println(typeOfPerson + " person already exists");
+            System.out.println("Creating person");
+            person = bank.createPerson(name, surname, passportId);
         }
 
         String bankName = person.getName();
