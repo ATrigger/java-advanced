@@ -6,6 +6,7 @@ import java.net.*;
 
 public class Server {
     private final static int PORT = 8888;
+
     public static void main(String[] args) {
         Bank bank = new BankImpl(PORT);
         try {

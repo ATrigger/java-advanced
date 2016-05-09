@@ -14,22 +14,25 @@ public class BankImpl implements Bank {
 
     // ������� ���
     public Person createPerson(String name, String surname, String passportId) throws RemoteException {
-            synchronized (this) {
-                RemotePerson person = new RemotePerson(name,surname,passportId,port);
-                persons.put(passportId,person);
-                UnicastRemoteObject.exportObject(person, port);
-                return person;
-            }
+        synchronized (this) {
+            RemotePerson person = new RemotePerson(name, surname, passportId, port);
+            persons.put(passportId, person);
+            UnicastRemoteObject.exportObject(person, port);
+            return person;
+        }
     }
 
     // �����頥� ���
     public Person getPerson(String passportId, boolean local) {
         RemotePerson person = persons.get(passportId);
-        if(person == null){
+        if (person == null) {
             return null;
         }
-        if(local) {return new LocalPerson(person);}
-        else {return person;}
+        if (local) {
+            return new LocalPerson(person);
+        } else {
+            return person;
+        }
 
     }
 }

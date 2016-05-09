@@ -98,7 +98,6 @@ public class HelloUDPClient {
     }
 
     /**
-     *
      * @param args args passed to command line
      */
     public static void main(String[] args) {
@@ -109,12 +108,12 @@ public class HelloUDPClient {
         }
         String host = args[0];
         String prefix = args[2];
-        try{
+        try {
             int port = Integer.parseInt(args[1]);
             int threads = Integer.parseInt(args[3]);
             int requests = Integer.parseInt(args[4]);
-            new HelloUDPClient().start(host,port,prefix,requests,threads);
-        } catch (NumberFormatException e){
+            new HelloUDPClient().start(host, port, prefix, requests, threads);
+        } catch (NumberFormatException e) {
             System.out.println("Usage: [host] [port] [prefix] [threads] [requests]");
         }
     }

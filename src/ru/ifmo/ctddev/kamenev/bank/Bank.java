@@ -5,8 +5,9 @@ import java.rmi.*;
 public interface Bank extends Remote {
     // ������� ���
     Person createPerson(String name, String surname, String passportId)
-        throws RemoteException;
+            throws RemoteException;
+
     // �����頥� ���
     Person getPerson(String passportId, boolean local)
-        throws RemoteException;
+            throws RemoteException;
 }

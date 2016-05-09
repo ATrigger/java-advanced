@@ -7,7 +7,7 @@ import java.net.*;
 public class Client {
 
     public static void main(String[] args) throws RemoteException {
-        if(args.length!=5){
+        if (args.length != 5) {
             System.out.println("Invalid number of arguments");
         }
         Bank bank;

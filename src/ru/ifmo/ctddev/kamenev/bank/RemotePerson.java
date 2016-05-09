@@ -1,4 +1,5 @@
 package ru.ifmo.ctddev.kamenev.bank;
+
 import java.rmi.Remote;
 
 /**
