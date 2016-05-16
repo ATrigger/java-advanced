@@ -27,8 +27,9 @@ public class HelloUDPServer implements HelloServer {
             System.out.println("Usage: [port] [threads]");
             return;
         }
-        try (HelloUDPServer server = new HelloUDPServer()) {
+        try {
             int port = Integer.parseInt(args[0]);
+            HelloUDPServer server = new HelloUDPServer();
             int threads = Integer.parseInt(args[1]);
             server.start(port, threads);
 
@@ -55,18 +56,19 @@ public class HelloUDPServer implements HelloServer {
         public void start() {
             for (int i = 0; i < threads; i++) {
                 workerThreads.submit(() -> {
-                    DatagramPacket request = new DatagramPacket(new byte[buffSize], buffSize);
+                    DatagramPacket pack = new DatagramPacket(new byte[buffSize], buffSize);
                     while (!Thread.interrupted()) {
                         try {
-                            socket.receive(request);
-                            String requestString = new String(request.getData(), request.getOffset(), request.getLength(), StandardCharsets.UTF_8);
+                            socket.receive(pack);
+                            String requestString = new String(pack.getData(), pack.getOffset(), pack.getLength(), StandardCharsets.UTF_8);
                             String responseString = "Hello, " + requestString;
 
-                            byte[] data = responseString.getBytes(StandardCharsets.UTF_8);
-                            DatagramPacket response = new DatagramPacket(data, data.length, request.getAddress(), request.getPort());
+                            //byte[] data = responseString.getBytes(StandardCharsets.UTF_8);
+                            //DatagramPacket response = new DatagramPacket(data, data.length, request.getAddress(), request.getPort());
+                            pack.setData(responseString.getBytes());
                             for(int ii = 0; ii < TRIES; ++ii) {
                                 try {
-                                    socket.send(response);
+                                    socket.send(pack);
                                     break;
                                 } catch (IOException e) {
                                     System.err.println("Unable to send response: " + e.getMessage() + ". Retrying");
