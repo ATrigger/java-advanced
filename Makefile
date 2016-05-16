@@ -9,6 +9,24 @@ classes = $(shell  find build -name '*.class' | tr '\n' ' ' | sed 's/\.\///g')
 sources =  $(shell find $(src_dir) -name '*.java' | tr '\n' ' ' | sed 's/\.\///g')
 myjar = $(shell find $(mylib_dir) -name '*.jar'| tr '\n' ' ' | sed 's/\.\///g')
 
+rmiregistry:
+	CLASSPATH=./build rmiregistry &
+
+hw10server:
+	java -cp "./build" ru.ifmo.ctddev.kamenev.bank.Server &
+
+hw10client:
+	java -cp "./build" ru.ifmo.ctddev.kamenev.bank.Client "$(name)" "$(surname)" "$(passportId)" "$(accountId)" "$(amount)" "$(serialize)"
+
+hw9client:
+	java -cp "./build$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/HelloUDPTest.jar" \
+	info.kgeorgiy.java.advanced.hello.Tester client ru.ifmo.ctddev.kamenev.hello.HelloUDPClient \
+	"$(salt)"
+hw9server:
+	java -cp "./build$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/HelloUDPTest.jar" \
+	info.kgeorgiy.java.advanced.hello.Tester server ru.ifmo.ctddev.kamenev.hello.HelloUDPServer \
+	"$(salt)"
+
 hw8:
 	java -cp "lib/src.jar$(shell for i in $(libs); do echo -n :$$i; done):$(artifacts_dir)/WebCrawlerTest.jar" \
 	info.kgeorgiy.java.advanced.crawler.Tester hard ru.ifmo.ctddev.kamenev.crawler.CrawlerImpl \

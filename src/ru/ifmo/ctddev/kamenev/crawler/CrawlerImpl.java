@@ -67,11 +67,9 @@ public class CrawlerImpl implements Crawler {
                         phaser.register();
                         extractors.submit(() -> {
                             try {
-                                if (depth > 1) {
-                                    tmp.extractLinks().stream().filter(to -> !result.contains(to)).forEach(to -> {
-                                        crawl(to, depth - 1);
-                                    });
-                                }
+                                tmp.extractLinks().stream().filter(to -> !result.contains(to)).forEach(to -> {
+                                    crawl(to, depth - 1);
+                                });
                             } catch (IOException e) {
                                 failure.put(url, e);
 

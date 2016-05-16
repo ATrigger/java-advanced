@@ -26,10 +26,8 @@ public abstract class AbstractPerson implements Person {
     public AbstractPerson(AbstractPerson other) {
         this.name = other.name;
         this.surname = other.surname;
-        this.passport = other.passport;
-        synchronized (other.accs) {
-            this.accs = new ConcurrentHashMap<>(other.accs);
-        }
+        this.passport = other.passport;    
+        this.accs = other.accs;
         this.port = other.port;
     }
 

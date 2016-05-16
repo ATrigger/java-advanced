@@ -12,7 +12,6 @@ public class BankImpl implements Bank {
         this.port = port;
     }
 
-    // ������� ���
     public Person createPerson(String name, String surname, String passportId) throws RemoteException {
         synchronized (this) {
             RemotePerson person = new RemotePerson(name, surname, passportId, port);
@@ -22,7 +21,6 @@ public class BankImpl implements Bank {
         }
     }
 
-    // �����頥� ���
     public Person getPerson(String passportId, boolean local) {
         RemotePerson person = persons.get(passportId);
         if (person == null) {

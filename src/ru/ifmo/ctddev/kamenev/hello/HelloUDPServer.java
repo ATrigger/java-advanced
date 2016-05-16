@@ -1,17 +1,19 @@
 package ru.ifmo.ctddev.kamenev.hello;
 
-
+import info.kgeorgiy.java.advanced.hello.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+
 import java.util.concurrent.*;
 
 /**
  * Class that implements server that listens and responses to packets on UDP protocol.
  */
-public class HelloUDPServer implements AutoCloseable {
-
+public class HelloUDPServer implements HelloServer {
+    private final static int TRIES = 10;
     private final BlockingQueue<Pimpl> runningServers;
 
     /**
@@ -25,10 +27,9 @@ public class HelloUDPServer implements AutoCloseable {
             System.out.println("Usage: [port] [threads]");
             return;
         }
-        try {
+        try (HelloUDPServer server = new HelloUDPServer()) {
             int port = Integer.parseInt(args[0]);
             int threads = Integer.parseInt(args[1]);
-            HelloUDPServer server = new HelloUDPServer();
             server.start(port, threads);
 
         } catch (NumberFormatException e) {
@@ -41,9 +42,11 @@ public class HelloUDPServer implements AutoCloseable {
         private final ExecutorService workerThreads;
         private final int buffSize;
         private final int threads;
+        private final int port;
 
         public Pimpl(int port, int threads) throws SocketException {
             this.threads = threads;
+            this.port = port;
             this.socket = new DatagramSocket(port);
             this.workerThreads = Executors.newFixedThreadPool(threads);
             this.buffSize = socket.getReceiveBufferSize();
@@ -56,23 +59,28 @@ public class HelloUDPServer implements AutoCloseable {
                     while (!Thread.interrupted()) {
                         try {
                             socket.receive(request);
-                            String requestString = new String(request.getData(), request.getOffset(), request.getLength());
+                            String requestString = new String(request.getData(), request.getOffset(), request.getLength(), StandardCharsets.UTF_8);
                             String responseString = "Hello, " + requestString;
 
-                            byte[] data = responseString.getBytes();
+                            byte[] data = responseString.getBytes(StandardCharsets.UTF_8);
                             DatagramPacket response = new DatagramPacket(data, data.length, request.getAddress(), request.getPort());
-                            try {
-                                socket.send(response);
-                            } catch (IOException e) {
-                                System.out.println("Unable to send response: " + e.getMessage());
+                            for(int ii = 0; ii < TRIES; ++ii) {
+                                try {
+                                    socket.send(response);
+                                    break;
+                                } catch (IOException e) {
+                                    System.err.println("Unable to send response: " + e.getMessage() + ". Retrying");
+                                }
                             }
+
                         } catch (IOException e) {
-                            System.out.println("Failed to receive packet: " + e.getMessage());
+                            System.err.println("Failed to receive packet: " + e.getMessage());
                         }
+                        
                     }
                 });
             }
-
+            System.out.println("Started listening on " + this.port + " in " + this.threads + " threads");
         }
 
         public void close() {

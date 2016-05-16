@@ -1,20 +1,21 @@
 package ru.ifmo.ctddev.kamenev.hello;
 
 import java.io.IOException;
-
+import info.kgeorgiy.java.advanced.hello.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import java.util.List;
 /**
  * Class to perform sending packets on UDP protocol.
  */
-public class HelloUDPClient {
+public class HelloUDPClient implements HelloClient{
     /**
      * Creates instance of class.
      */
@@ -51,48 +52,39 @@ public class HelloUDPClient {
         }
 
         public void action() {
-            ArrayList<Callable<Void>> workers = new ArrayList<>();
             for (int threadNum = 0; threadNum < threads; threadNum++) {
                 final int workerNum = threadNum;
-                workers.add(() -> {
-                    DatagramSocket threadSocket = new DatagramSocket();
-                    threadSocket.setSoTimeout(10000);
-                    final int socketBuff = threadSocket.getReceiveBufferSize();
-                    DatagramPacket pack = new DatagramPacket(new byte[socketBuff], socketBuff);
-                    for (int i = 0; i < requests; i++) {
-                        String request = prefix + workerNum + "_" + i;
-                        byte data[] = request.getBytes();
-                        DatagramPacket req = new DatagramPacket(data, data.length, to);
-                        while (!Thread.interrupted()) {
-                            try {
-                                threadSocket.send(req);
+                workerPool.submit(() -> {
+                    try(DatagramSocket threadSocket = new DatagramSocket()) {
+                        threadSocket.setSoTimeout(100);
+                        final int socketBuff = threadSocket.getReceiveBufferSize();
+                        DatagramPacket pack = new DatagramPacket(new byte[socketBuff], socketBuff);
+                        for (int i = 0; i < requests; i++) {
+                            String request = prefix + workerNum + "_" + i;
+                            byte data[] = request.getBytes(StandardCharsets.UTF_8);
+                            DatagramPacket req = new DatagramPacket(data, data.length, to);
+                            while (!Thread.interrupted()) {
                                 try {
-                                    threadSocket.receive(pack);
-                                    String responseStr = new String(pack.getData(), pack.getOffset(), pack.getLength());
-                                    String referenceStr = "Hello, " + request;
-                                    if (!responseStr.equals(referenceStr)) {
-                                        continue;
+                                    threadSocket.send(req);
+                                    try {
+                                        threadSocket.receive(pack);
+                                        String responseStr = new String(pack.getData(), pack.getOffset(), pack.getLength(), StandardCharsets.UTF_8);
+                                        String referenceStr = "Hello, " + request;
+                                        if (responseStr.equals(referenceStr)) {
+                                            break;
+                                        }
+                                        //System.out.println(responseStr);
+                                    } catch (IOException e) {
+                                        System.err.println("Unable to receive answer: " + e.getMessage());
                                     }
-                                    System.out.println(responseStr);
-                                    break;
                                 } catch (IOException e) {
-                                    System.out.println("Unable to receive answer: " + e.getMessage());
+                                    System.err.println("Unable to send request: " + e.getMessage());
                                 }
-                            } catch (IOException e) {
-                                System.out.println("Unable to send request: " + e.getMessage());
                             }
                         }
-                    }
-                    threadSocket.close();
-                    return null;
+                        return null;
+                    }   
                 });
-            }
-            try {
-                workerPool.invokeAll(workers);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                workerPool.shutdown();
             }
         }
     }
