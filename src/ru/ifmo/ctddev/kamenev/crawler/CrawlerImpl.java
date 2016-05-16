@@ -55,7 +55,7 @@ public class CrawlerImpl implements Crawler {
         }
 
         private void crawl(String url, int depth) {
-            if (depth == 0) {
+            if (depth == 0 || result.contains(url)) {
                 return;
             }
             result.add(url);
